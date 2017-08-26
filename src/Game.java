@@ -1,22 +1,24 @@
-import GameObjects.GameObject;
 import GameObjects.Tree;
-import GameObjects.Upgrades;
+import GameObjects.UpgradePanel;
 import Input.Mouse;
 
 import javax.swing.*;
 import java.awt.*;
 import java.awt.image.BufferStrategy;
-import java.util.ArrayList;
+
+import static java.lang.Thread.sleep;
 
 public class Game extends Canvas implements Runnable {
-    public static final int WIDTH = 800;
-    public static final int HEIGHT = 600;
+    private static final int WIDTH = 800;
+    private static final int HEIGHT = 600;
 
     private Thread thread;
-    private JFrame frame;
     private boolean running;
     private Mouse mouse = new Mouse();
-    private ArrayList<GameObject> gameObjects = new ArrayList<GameObject>();
+    private long wood = 0L;
+
+    private Tree tree;
+    private UpgradePanel upgrades;
 
     public Game() {
         setupScreen();
@@ -24,19 +26,17 @@ public class Game extends Canvas implements Runnable {
         addMouseMotionListener(mouse);
 
         Rectangle rect = new Rectangle(0, 0, WIDTH / 2, HEIGHT);
-        Tree tree = new Tree(rect);
+        tree = new Tree(rect);
         tree.loadImage();
 
-        Upgrades upgrades = new Upgrades();
-        upgrades.setXOffset(WIDTH / 2);
-        gameObjects.add(tree);
-        gameObjects.add(upgrades);
+        upgrades = new UpgradePanel();
+        upgrades.setOffset(new Point(WIDTH / 2, 30));
     }
 
     private void setupScreen() {
         Dimension size = new Dimension(WIDTH, HEIGHT);
         setPreferredSize(size);
-        frame = new JFrame();
+        JFrame frame = new JFrame();
         frame.setResizable(false);
         frame.setTitle("Wood Chopper");
         frame.add(this);
@@ -46,13 +46,13 @@ public class Game extends Canvas implements Runnable {
         frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
     }
 
-    public void start() {
+    private void start() {
         running = true;
         thread = new Thread(this, "Display");
         thread.start();
     }
 
-    public void stop() {
+    private void stop() {
         running = false;
         try {
             thread.join();
@@ -61,30 +61,31 @@ public class Game extends Canvas implements Runnable {
         }
     }
 
-    public void update() {
-        handleEvents();
-    }
-
-    private void handleEvents() {
-        if (mouse.leftMouseButtonDown()) {
-            for (GameObject g : gameObjects) {
-                if (g.click(mouse.getPosition())) {
-                    break;
-                }
+    private void update() {
+        if (mouse.getLastPushedButton() == 1) {
+            Point p = mouse.getPosition();
+            if (tree.click(p)) {
+                upgrades.mouseClick();
             }
+            upgrades.click(p);
         }
+        upgrades.update();
     }
 
-    public void render() {
+    private void render() {
         BufferStrategy bs = getBufferStrategy();
         if (bs == null) {
             createBufferStrategy(2);
             return;
         }
-        Graphics grap = bs.getDrawGraphics();
-        for (GameObject gameObject : gameObjects) {
-            gameObject.draw(grap);
-        }
+
+        // Clears the screen
+        Graphics grap = getBufferStrategy().getDrawGraphics();
+        grap.clearRect(0, 0, WIDTH, HEIGHT);
+
+        tree.draw(grap);
+        upgrades.draw(grap);
+
         grap.dispose();
         bs.show();
     }
@@ -94,6 +95,11 @@ public class Game extends Canvas implements Runnable {
         while (running) {
             update();
             render();
+            try {
+                sleep(500);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
         stop();
     }

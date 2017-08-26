@@ -4,42 +4,48 @@ import java.awt.*;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
+import java.util.LinkedList;
 
-public class Mouse implements MouseListener, MouseMotionListener {
-    private boolean[] mouseButtons = new boolean[4];
+public class Mouse implements MouseMotionListener, MouseListener {
     private Point position;
+    private LinkedList<Integer> mouseClicks = new LinkedList<Integer>();
 
     @Override
-    public void mouseClicked(MouseEvent mouseEvent) {}
+    public void mouseClicked(MouseEvent mouseEvent) {
+    }
 
     @Override
     public void mousePressed(MouseEvent mouseEvent) {
-        mouseButtons[mouseEvent.getButton()] = true;
-        System.out.println("Pressed: " + mouseEvent.getButton());
+        int button = mouseEvent.getButton();
+        if (mouseClicks.size() < 1) {
+            mouseClicks.addLast(button);
+        } else if (button != mouseClicks.getLast()) {
+            mouseClicks.addLast(button);
+        }
     }
 
     @Override
     public void mouseReleased(MouseEvent mouseEvent) {
-        mouseButtons[mouseEvent.getButton()] = false;
-        System.out.println("Released: " + mouseEvent.getButton());
     }
 
     @Override
-    public void mouseEntered(MouseEvent mouseEvent) {}
+    public void mouseEntered(MouseEvent mouseEvent) {
+    }
 
     @Override
-    public void mouseExited(MouseEvent mouseEvent) {}
+    public void mouseExited(MouseEvent mouseEvent) {
+    }
 
-    public boolean leftMouseButtonDown(){
-        return mouseButtons[1];
+    public Integer getLastPushedButton() {
+        if (mouseClicks.size() > 0) {
+            Integer last = mouseClicks.getLast();
+            mouseClicks.removeLast();
+            return last;
+        }
+        return -1;
     }
-    public boolean middleMouseButtonDown(){
-        return mouseButtons[2];
-    }
-    public boolean rightMouseButtonDown(){
-        return mouseButtons[3];
-    }
-    public Point getPosition(){
+
+    public Point getPosition() {
         return position;
     }
 
