@@ -7,7 +7,7 @@ import java.awt.event.MouseMotionListener;
 import java.util.LinkedList;
 
 public class Mouse implements MouseMotionListener, MouseListener {
-    private Point position;
+    private Point position = new Point(0, 0);
     private LinkedList<Integer> mouseClicks = new LinkedList<Integer>();
 
     @Override

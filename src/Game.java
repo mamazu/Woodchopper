@@ -28,7 +28,7 @@ public class Game extends Canvas implements Runnable {
         tree = new Tree(rect);
         tree.loadImage();
 
-        upgrades = new UpgradePanel(WIDTH /2);
+        upgrades = new UpgradePanel(new Rectangle(WIDTH /2, 0 , WIDTH /2, HEIGHT));
     }
 
     private void setupScreen() {

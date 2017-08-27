@@ -4,23 +4,24 @@ import java.awt.*;
 
 public class UpgradePanel implements GameObject {
     private Upgrade[] upgradeArray = new Upgrade[2];
+    private Rectangle dimension;
     private long wood;
-    private int xOffset = 0;
     private Font scoreFont = new Font("default", Font.BOLD, 20);
+    private final int upgradeHeight;
 
-    public UpgradePanel(int xOffset) {
-        upgradeArray[0] = new Upgrade("Mouse Upgrade", 1);
-        upgradeArray[1] = new Upgrade("Test U2");
-        this.xOffset = xOffset;
-        for(Upgrade upgrade : upgradeArray){
-            upgrade.dimension.y += 30;
-            upgrade.dimension.x += xOffset;
-            upgrade.dimension.width = xOffset;
+    public UpgradePanel(Rectangle dimension) {
+        this.dimension = dimension;
+        upgradeArray[0] = new Upgrade("Mouse Upgrade", dimension.width, 1);
+        upgradeArray[1] = new Upgrade("Test U2", dimension.width);
+        upgradeHeight = upgradeArray[0].dimension.height + 5;
+        for (Upgrade upgrade : upgradeArray) {
             upgrade.setBackgroundImage();
         }
     }
 
     public boolean click(Point p) {
+        p.translate(-dimension.x, -dimension.y - scoreFont.getSize() - 8);
+        if (p.x < 0 || p.y < 0) return false;
         for (Upgrade upgrade : upgradeArray) {
             double price = upgrade.getPrice();
             if (upgrade.click(p) && price <= wood) {
@@ -28,6 +29,7 @@ public class UpgradePanel implements GameObject {
                 upgrade.upgrade();
                 return true;
             }
+            p.translate(0, -upgradeHeight);
         }
         return false;
     }
@@ -35,11 +37,14 @@ public class UpgradePanel implements GameObject {
     @Override
     public void draw(Graphics g) {
         g.setFont(scoreFont);
-        g.setColor(new Color(66,16,16));
-        g.drawString(String.valueOf(wood),  xOffset + 5, 25);
+        g.setColor(new Color(66, 16, 16));
+        g.drawString(String.valueOf(wood), dimension.x + 5, scoreFont.getSize() + 2);
 
-        for (Upgrade upgrade : upgradeArray) {
-            upgrade.draw(g);
+        for (int i = 0; i < upgradeArray.length; i++) {
+            Upgrade upgrade = upgradeArray[i];
+            Point location = dimension.getLocation();
+            location.translate(0, scoreFont.getSize() + 8 + upgradeHeight * i);
+            upgrade.draw(g, location);
         }
     }
 

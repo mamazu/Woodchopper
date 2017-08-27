@@ -8,7 +8,6 @@ import java.io.IOException;
 
 public class Upgrade implements GameObject {
     private static Image backgroundImage;
-    private static int index = 0;
 
     private final Font font = new Font(null, Font.PLAIN, 20);
     private final Font levelFont = new Font(null, Font.PLAIN, 15);
@@ -20,22 +19,27 @@ public class Upgrade implements GameObject {
     private String name = "Test Product";
 
     Upgrade(String name) {
-        this(name, 0);
+        this(name, 0, 0);
     }
 
-    Upgrade(String name, int startLevel) {
-        dimension = new Rectangle(0, index++ * (60 + 5), 0, 60);
+    Upgrade(String name, int width) {
+        this(name, width, 0);
+    }
+
+    Upgrade(String name, int width, int startLevel) {
+        dimension = new Rectangle(0, 0, width, 60);
         this.name = name;
         this.level = startLevel;
         updatePrice();
     }
 
-    public void setBackgroundImage(){
+    public void setBackgroundImage() {
+        String filePath = "/home/mamazu/IdeaProjects/WoodChopper/resources/upgrade_background.png";
         try {
-            BufferedImage bi = ImageIO.read(new File("/home/mamazu/IdeaProjects/WoodChopper/resources/upgrade_background.png"));
+            BufferedImage bi = ImageIO.read(new File(filePath));
             backgroundImage = bi.getScaledInstance(dimension.width, dimension.height, Image.SCALE_SMOOTH);
         } catch (IOException e) {
-            System.out.print("Could not find file");
+            System.err.print("Could not find file");
         }
     }
 
@@ -53,7 +57,7 @@ public class Upgrade implements GameObject {
 
     @Override
     public boolean click(Point p) {
-        return p.x >= dimension.x && p.x <= dimension.x + dimension.width && p.y >= dimension.y && p.y <= dimension.y + dimension.height;
+        return dimension.contains(p);
     }
 
     private void updatePrice() {
@@ -63,26 +67,31 @@ public class Upgrade implements GameObject {
 
     @Override
     public void draw(Graphics g) {
-        if(backgroundImage == null){
+        draw(g, new Point(0, 0));
+    }
+
+    public void draw(Graphics g, Point location) {
+        location.translate(dimension.x, dimension.y);
+        if (backgroundImage == null) {
             g.setColor(Color.RED);
-            g.fillRect(dimension.x, dimension.y, dimension.width, dimension.height);
-        }else{
-            g.drawImage(backgroundImage, dimension.x, dimension.y, null);
+            g.fillRect(location.x, location.y, dimension.width, dimension.height);
+        } else {
+            g.drawImage(backgroundImage, location.x, location.y, null);
         }
 
         // Drawing the name
         g.setColor(Color.BLACK);
         g.setFont(font);
-        g.drawString(name, 5 + dimension.x, dimension.y + font.getSize());
+        g.drawString(name, 5 + location.x, location.y + font.getSize());
 
         // Price
         String priceString = "$ " + price;
         int width = g.getFontMetrics().stringWidth(priceString);
-        g.drawString(priceString, dimension.x + dimension.width - width - 5, dimension.y + font.getSize() * 2);
+        g.drawString(priceString, location.x + dimension.width - width - 5, location.y + font.getSize() * 2);
 
         // Price
         g.setFont(levelFont);
-        g.drawString("Level: " + level + "(" + getOutput() + ")", dimension.x + 5, dimension.y + font.getSize() * 3 - 2);
+        g.drawString("Level: " + level + "(" + getOutput() + ")", location.x + 5, location.y + font.getSize() * 3 - 2);
     }
 
     void upgrade() {
