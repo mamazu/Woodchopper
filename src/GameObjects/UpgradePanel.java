@@ -8,17 +8,15 @@ public class UpgradePanel implements GameObject {
     private int xOffset = 0;
     private Font scoreFont = new Font("default", Font.BOLD, 20);
 
-    public UpgradePanel() {
-        upgradeArray[0] = new Upgrade(0, "Mouse Upgrade", 1);
-        upgradeArray[1] = new Upgrade(1, "Test U2");
-    }
-
-    public void setOffset(Point p) {
-        xOffset = p.x;
-        for (Upgrade upgrade : upgradeArray) {
-            upgrade.dimension.y += p.y;
-            upgrade.dimension.x += p.x;
-            upgrade.dimension.width = p.x;
+    public UpgradePanel(int xOffset) {
+        upgradeArray[0] = new Upgrade("Mouse Upgrade", 1);
+        upgradeArray[1] = new Upgrade("Test U2");
+        this.xOffset = xOffset;
+        for(Upgrade upgrade : upgradeArray){
+            upgrade.dimension.y += 30;
+            upgrade.dimension.x += xOffset;
+            upgrade.dimension.width = xOffset;
+            upgrade.setBackgroundImage();
         }
     }
 

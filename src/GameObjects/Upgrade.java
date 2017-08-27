@@ -1,9 +1,16 @@
 package GameObjects;
 
+import javax.imageio.ImageIO;
 import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.File;
+import java.io.IOException;
 
 public class Upgrade implements GameObject {
     public static final int UPGRADE_HEIGHT = 60;
+    private static Image backgroundImage;
+    private static int index = 0;
+
     private final Font font = new Font(null, Font.PLAIN, 20);
     private final Font levelFont = new Font(null, Font.PLAIN, 15);
     Rectangle dimension;
@@ -13,15 +20,24 @@ public class Upgrade implements GameObject {
     private double price = 1;
     private String name = "Test Product";
 
-    public Upgrade(int index, String name) {
-        this(index, name, 0);
+    Upgrade(String name) {
+        this(name, 0);
     }
 
-    public Upgrade(int index, String name, int startLevel) {
-        dimension = new Rectangle(0, index * (UPGRADE_HEIGHT + 5), 0, UPGRADE_HEIGHT);
+    Upgrade(String name, int startLevel) {
+        dimension = new Rectangle(0, index++ * (UPGRADE_HEIGHT + 5), 10, UPGRADE_HEIGHT);
         this.name = name;
         this.level = startLevel;
         updatePrice();
+    }
+
+    public void setBackgroundImage(){
+        try {
+            BufferedImage bi = ImageIO.read(new File("/home/mamazu/IdeaProjects/WoodChopper/resources/upgrade_background.png"));
+            backgroundImage = bi.getScaledInstance(dimension.width, dimension.height, Image.SCALE_SMOOTH);
+        } catch (IOException e) {
+            System.out.print("Could not find file");
+        }
     }
 
     int getLevel() {
@@ -48,8 +64,12 @@ public class Upgrade implements GameObject {
 
     @Override
     public void draw(Graphics g) {
-        g.setColor(Color.RED);
-        g.fillRect(dimension.x, dimension.y, dimension.width, dimension.height);
+        if(backgroundImage == null){
+            g.setColor(Color.RED);
+            g.fillRect(dimension.x, dimension.y, dimension.width, dimension.height);
+        }else{
+            g.drawImage(backgroundImage, dimension.x, dimension.y, null);
+        }
 
         // Drawing the name
         g.setColor(Color.BLACK);
@@ -66,7 +86,7 @@ public class Upgrade implements GameObject {
         g.drawString("Level: " + level + "(" + getOutput() + ")", dimension.x + 5, dimension.y + font.getSize() * 3 - 2);
     }
 
-    public void upgrade() {
+    void upgrade() {
         level++;
         updatePrice();
     }

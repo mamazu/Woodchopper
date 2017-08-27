@@ -15,7 +15,6 @@ public class Game extends Canvas implements Runnable {
     private Thread thread;
     private boolean running;
     private Mouse mouse = new Mouse();
-    private long wood = 0L;
 
     private Tree tree;
     private UpgradePanel upgrades;
@@ -29,8 +28,7 @@ public class Game extends Canvas implements Runnable {
         tree = new Tree(rect);
         tree.loadImage();
 
-        upgrades = new UpgradePanel();
-        upgrades.setOffset(new Point(WIDTH / 2, 30));
+        upgrades = new UpgradePanel(WIDTH /2);
     }
 
     private void setupScreen() {
@@ -79,14 +77,13 @@ public class Game extends Canvas implements Runnable {
             return;
         }
 
-        // Clears the screen
-        Graphics grap = getBufferStrategy().getDrawGraphics();
-        grap.clearRect(0, 0, WIDTH, HEIGHT);
+        Graphics graphics = getBufferStrategy().getDrawGraphics();
+        graphics.clearRect(0, 0, WIDTH, HEIGHT);
 
-        tree.draw(grap);
-        upgrades.draw(grap);
+        tree.draw(graphics);
+        upgrades.draw(graphics);
 
-        grap.dispose();
+        graphics.dispose();
         bs.show();
     }
 

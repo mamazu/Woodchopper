@@ -24,7 +24,6 @@ public class Tree implements GameObject {
             image = bi.getScaledInstance(dimension.width, dimension.height, Image.SCALE_SMOOTH);
         } catch (IOException e) {
             System.out.print("Could not find file");
-            return;
         }
     }
 
