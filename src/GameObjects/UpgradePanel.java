@@ -24,7 +24,6 @@ public class UpgradePanel implements GameObject {
         for (Upgrade upgrade : upgradeArray) {
             double price = upgrade.getPrice();
             if (upgrade.click(p) && price <= wood) {
-                System.out.println(price + " " + wood);
                 wood -= (long) price;
                 upgrade.upgrade();
                 return true;

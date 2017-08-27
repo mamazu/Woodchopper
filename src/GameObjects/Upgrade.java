@@ -7,7 +7,6 @@ import java.io.File;
 import java.io.IOException;
 
 public class Upgrade implements GameObject {
-    public static final int UPGRADE_HEIGHT = 60;
     private static Image backgroundImage;
     private static int index = 0;
 
@@ -25,7 +24,7 @@ public class Upgrade implements GameObject {
     }
 
     Upgrade(String name, int startLevel) {
-        dimension = new Rectangle(0, index++ * (UPGRADE_HEIGHT + 5), 10, UPGRADE_HEIGHT);
+        dimension = new Rectangle(0, index++ * (60 + 5), 0, 60);
         this.name = name;
         this.level = startLevel;
         updatePrice();
